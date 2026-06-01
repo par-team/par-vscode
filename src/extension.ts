@@ -6,6 +6,7 @@ import {
     LanguageClientOptions,
     ServerOptions,
 } from "vscode-languageclient/node";
+import { getBuiltinFileContent } from "./lsp_ext";
 
 const EXTENSION_NS = "par";
 
@@ -16,14 +17,20 @@ const enum ParCommands {
 let client: LanguageClient | undefined;
 let configureLang: vscode.Disposable | undefined;
 
+function getClient() {
+    if (!client) {
+        vscode.window.showErrorMessage("Par client not found");
+        throw new Error("Par client not found");
+    }
+    return client;
+}
+
 export async function activate(context: vscode.ExtensionContext) {
     const restartCommand = vscode.commands.registerCommand(
         ParCommands.RestartServer,
         async () => {
-            if (!client) {
-                vscode.window.showErrorMessage("Par client not found");
-                return;
-            }
+            const client = getClient();
+
             try {
                 if (client.isRunning()) {
                     await client.restart();
@@ -37,6 +44,24 @@ export async function activate(context: vscode.ExtensionContext) {
         },
     );
     context.subscriptions.push(restartCommand);
+
+    const tdcp: vscode.TextDocumentContentProvider = {
+        provideTextDocumentContent(
+            uri: vscode.Uri,
+            token: vscode.CancellationToken,
+        ): vscode.ProviderResult<string> {
+            const client = getClient();
+
+            return client.sendRequest(
+                getBuiltinFileContent,
+                { builtin_path: uri.path },
+                token,
+            );
+        },
+    };
+    context.subscriptions.push(
+        vscode.workspace.registerTextDocumentContentProvider("par-builtin", tdcp),
+    );
 
     client = await createLanguageClient();
     client?.start();
