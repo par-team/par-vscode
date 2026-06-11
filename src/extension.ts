@@ -45,6 +45,23 @@ export async function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(restartCommand);
 
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${EXTENSION_NS}.runDefinitionCli`,
+            async (uri: string, target: string) => {
+                const command = await getParCommand();
+                if (!command) return;
+
+                vscode.window.createTerminal(`Par Run: ${target}`, command, [
+                    "run",
+                    "--package",
+                    vscode.Uri.parse(uri, true).fsPath,
+                    target,
+                ]).show();
+            },
+        ),
+    );
+
     const tdcp: vscode.TextDocumentContentProvider = {
         provideTextDocumentContent(
             uri: vscode.Uri,
