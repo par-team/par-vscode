@@ -70,6 +70,31 @@ export async function activate(context: vscode.ExtensionContext) {
         ),
     );
 
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${EXTENSION_NS}.runTestCli`,
+            async (uri: string, target: string) => {
+                const command = await getParCommand();
+                if (!command) return;
+
+                const packageUri = vscode.Uri.parse(uri, true);
+                const args = ["test", "--package", packageUri.fsPath, target];
+                const task = new vscode.Task(
+                    { type: "process" },
+                    vscode.workspace.getWorkspaceFolder(packageUri) ??
+                        vscode.TaskScope.Workspace,
+                    `Par Test: ${target}`,
+                    "par",
+                    new vscode.ProcessExecution(command, args),
+                );
+                task.presentationOptions.clear = true;
+                task.presentationOptions.focus = false;
+
+                await vscode.tasks.executeTask(task);
+            },
+        ),
+    );
+
     const tdcp: vscode.TextDocumentContentProvider = {
         provideTextDocumentContent(
             uri: vscode.Uri,
