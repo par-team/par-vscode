@@ -95,7 +95,7 @@ repository:
   numbers:
     patterns:
       - name: constant.numeric
-        match: \b[+-]?\d[\d_]*(?:\.\d[\d_]*(?:[eE][+-]?\d[\d_]*)?)?\b
+        match: '[+-]?\b\d[\d_]*(?:\.\d[\d_]*(?:[eE][+-]?\d[\d_]*)?)?\b'
   module-declarations:
     patterns:
       - match: \b(export)\s+(module)\s+([A-Z][\w\d_]*)\b
@@ -118,14 +118,15 @@ repository:
           2: { name: entity.name.namespace }
   type-parameter-constraints:
     patterns:
-      - match: (<)\s*([a-z_][\w\d_]*)\s*(:)\s*(box|data|number|signed)\s*(>)
+      - match: (?:(<)|(,))\s*([a-z_][\w\d_]*)\s*(:)\s*(once|box|data|number|signed)\b\s*(?:(>)|(?=,))
         captures:
           1: { name: punctuation.definition.type-parameters.begin }
-          2: { name: variable.other }
-          3: { name: punctuation.separator.annotation }
-          4: { name: storage.type.constraint.par }
-          5: { name: punctuation.definition.type-parameters.end }
-      - match: \b(type)\s+([a-z_][\w\d_]*)\s*(:)\s*(box|data|number|signed)\b
+          2: { name: punctuation.separator.type-parameters }
+          3: { name: variable.other }
+          4: { name: punctuation.separator.annotation }
+          5: { name: storage.type.constraint.par }
+          6: { name: punctuation.definition.type-parameters.end }
+      - match: \b(type)\s+([a-z_][\w\d_]*)\s*(:)\s*(once|box|data|number|signed)\b
         captures:
           1: { name: keyword.declaration }
           2: { name: variable.other }
@@ -146,12 +147,12 @@ repository:
       - name: keyword.control
         match: \b(do|case|in|chan|begin|loop|unfounded|catch|throw|try|poll|repoll|submit|default|else|if|is|and|or|not)\b
       - name: keyword.other
-        match: \b(either|choice|recursive|iterative|self|box|dual|as|external)\b
+        match: \b(either|choice|recursive|iterative|self|once|box|dual|as|external)\b
       - name: keyword.operator
         match: '!'
   dot-keywords:
     patterns:
-      - match: (\.)\s*(case|catch|try|begin|loop|unfounded|poll|repoll|submit|default)\b(@([a-z_][\w\d_]*))?
+      - match: (\.)\s*(case|try|begin|loop|unfounded|default)\b(@([a-z_][\w\d_]*))?
         captures:
           1: { name: punctuation.accessor.dot }
           2: { name: keyword.control }
@@ -161,11 +162,17 @@ repository:
       - name: keyword.operator.word.par
         match: \bneg\b
       - name: keyword.operator.link.par
-        match: (<-|->|<>)
+        match: (->|<>)
+      - name: keyword.operator.branch.par
+        match: =>
       - name: keyword.operator.comparison.par
         match: (==|!=|<=|>=|<|>)
       - name: keyword.operator.arithmetic.par
         match: (\+=|-=|\*=|/=|\+|-|\*|/)
+      - name: keyword.operator.assignment.par
+        match: =
+      - name: keyword.operator.continuation.par
+        match: \?
   definitions:
     patterns:
       - match: \b(dec)\s+([A-Z][\w\d_]*)(?:\s*(\.)\s*([A-Z][\w\d_]*))?\b

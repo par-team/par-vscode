@@ -42,18 +42,18 @@
             "do {${1}} in ${0}"
         ]
     },
-    "Match Expression": {
-        "prefix": ["match"],
+    "Case Expression": {
+        "prefix": ["case"],
         "body": [
-            "${1} {",
+            "${1}.case {",
             "\t${2} => ${0}",
             "}"
         ]
     },
-    "Match Statement": {
-        "prefix": ["match"],
+    "Case Statement": {
+        "prefix": ["case"],
         "body": [
-            "${1} {",
+            "${1}.case {",
             "\t${2} => {${0}}",
             "}"
         ]

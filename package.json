@@ -2,7 +2,7 @@
   "name": "par-vscode",
   "displayName": "par-vscode",
   "description": "Support for the Par language",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "publisher": "par-lang",
   "engines": {
     "vscode": "^1.98.0"
@@ -87,6 +87,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -b --noEmit && esbuild src/extension.ts --bundle --platform=node --external:vscode --outfile=out/extension.js --format=cjs --sourcemap && scripts/process-yaml.mjs",
+    "test": "node scripts/test-grammar.mjs",
     "watch": "concurrently -n 'type,esb,yaml' 'tsc -b -w --noEmit' \"esbuild src/extension.ts --bundle --platform=node --external:vscode --outfile=out/extension.js --format=cjs --sourcemap --watch\" 'scripts/process-yaml.mjs -w'",
     "vsce:verify": "vsce ls --no-yarn",
     "vsce:package": "vsce pack --no-yarn",
