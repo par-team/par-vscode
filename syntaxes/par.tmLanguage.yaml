@@ -145,7 +145,7 @@ repository:
       - name: keyword.declaration
         match: \b(dec|def|type|let|module|import|export)\b
       - name: keyword.control
-        match: \b(do|case|in|chan|begin|loop|unfounded|catch|throw|try|poll|repoll|submit|default|else|if|is|and|or|not)\b
+        match: \b(do|case|in|chan|begin|loop|unfounded|catch|throw|try|todo|poll|repoll|submit|default|else|if|is|and|or|not)\b
       - name: keyword.other
         match: \b(either|choice|recursive|iterative|self|once|box|dual|as|external)\b
       - name: keyword.operator
