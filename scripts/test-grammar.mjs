@@ -40,13 +40,13 @@ assert.deepEqual(
     ),
     ["number"],
 );
-assert.deepEqual(constraintsIn("def F = [<e: once, a: box> value] value"), [
-    "once",
-    "box",
+assert.deepEqual(constraintsIn("def F = [<e: drop, a: share> value] value"), [
+    "drop",
+    "share",
 ]);
 assert.deepEqual(constraintsIn("def F = [type a: signed, value] value"), [
     "signed",
 ]);
-assert.deepEqual(constraintsIn("let f: once [a] a = once [a] a"), []);
+assert.deepEqual(constraintsIn("let f: box [a] a = box [a] a"), []);
 
 console.log("Grammar tests passed.");
