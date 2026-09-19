@@ -7,6 +7,7 @@ import {
     ServerOptions,
 } from "vscode-languageclient/node";
 import { getBuiltinFileContent } from "./lsp_ext";
+import which = require("which");
 
 const EXTENSION_NS = "par";
 
@@ -150,10 +151,8 @@ async function createLanguageClient(): Promise<LanguageClient | undefined> {
     );
 }
 
-export async function getParCommand(): Promise<string | undefined> {
-    const command = getParCommandFromConfig();
-    // todo: what if it's unset
-    return command;
+export async function getParCommand(): Promise<string | null> {
+    return getParCommandFromConfig() ?? which("par-lang", { nothrow: true });
 }
 
 function getParCommandFromConfig(): string | undefined {
