@@ -152,7 +152,7 @@ async function createLanguageClient(): Promise<LanguageClient | undefined> {
 }
 
 export async function getParCommand(): Promise<string | null> {
-    return getParCommandFromConfig() ?? which("par-lang", { nothrow: true });
+    return getParCommandFromConfig() ?? which("par", { nothrow: true });
 }
 
 function getParCommandFromConfig(): string | undefined {
