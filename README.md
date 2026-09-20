@@ -1,25 +1,15 @@
 # Par for VS Code
 
-This extension adds support for the [Par](https://github.com/faiface/par-lang) programming language, including its language server.
+VS Code support for the [Par programming language](https://github.com/par-team/par-lang).
 
 ## Features
 
-- Syntax highlighting
-- Snippets
-- Integration of the language server
+- Syntax highlighting and snippets
+- Diagnostics, navigation, completion, and other language-server features
+- Code lenses for running definitions and tests
 
-## Extension Settings
+## Setup
 
-This extension contributes the following settings:
+Install Par and make the `par` executable available on `PATH`. The extension starts the language server automatically with `par lsp`.
 
-* `par.path`: Path to the language server executable. Must be specified for the server to run
-
-<!--## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.-->
-
-## Release Notes
-
-### 0.0.1
-
-The extension -- like the language -- is currently in active developement and might change any time.
+If `par` is not on `PATH`, set `par.path` to the executable's path in your VS Code settings.
