@@ -38,7 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(restartCommand);
 
-    client = await createLanguageClient();
+    client = await createLanguageClient(context);
     client?.start();
 }
 
@@ -48,7 +48,9 @@ export function deactivate(): Thenable<void> | undefined {
     return client?.stop();
 }
 
-async function createLanguageClient(): Promise<LanguageClient | undefined> {
+async function createLanguageClient(
+    context: vscode.ExtensionContext,
+): Promise<LanguageClient | undefined> {
     const command = await getParCommand();
     if (!command) {
         const message = `Could not resolve Par executable. Please ensure it is available
@@ -58,9 +60,12 @@ async function createLanguageClient(): Promise<LanguageClient | undefined> {
         return;
     }
 
+    const traceOutputChannel = vscode.window.createOutputChannel("Par LSP Trace");
+    context.subscriptions.push(traceOutputChannel);
+
     const clientOptions: LanguageClientOptions = {
         documentSelector: [{ scheme: "file", language: "par" }],
-        traceOutputChannel: vscode.window.createOutputChannel("Par LSP Trace"),
+        traceOutputChannel,
     };
 
     const serverOptions: ServerOptions = {

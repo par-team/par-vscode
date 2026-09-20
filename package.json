@@ -87,7 +87,7 @@
             "verbose"
           ],
           "default": "off",
-          "description": "Trace requests to the Par LSP server."
+          "description": "Trace communication with the Par language server. Verbose traces may contain source code."
         }
       }
     }
