@@ -6,6 +6,8 @@ import {
     LanguageClientOptions,
     ServerOptions,
 } from "vscode-languageclient/node";
+import { getBuiltinFileContent } from "./lsp_ext";
+import which = require("which");
 
 const EXTENSION_NS = "par";
 
@@ -16,14 +18,20 @@ const enum ParCommands {
 let client: LanguageClient | undefined;
 let configureLang: vscode.Disposable | undefined;
 
+function getClient() {
+    if (!client) {
+        vscode.window.showErrorMessage("Par client not found");
+        throw new Error("Par client not found");
+    }
+    return client;
+}
+
 export async function activate(context: vscode.ExtensionContext) {
     const restartCommand = vscode.commands.registerCommand(
         ParCommands.RestartServer,
         async () => {
-            if (!client) {
-                vscode.window.showErrorMessage("Par client not found");
-                return;
-            }
+            const client = getClient();
+
             try {
                 if (client.isRunning()) {
                     await client.restart();
@@ -37,6 +45,74 @@ export async function activate(context: vscode.ExtensionContext) {
         },
     );
     context.subscriptions.push(restartCommand);
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${EXTENSION_NS}.runDefinitionCli`,
+            async (uri: string, target: string) => {
+                const command = await getParCommand();
+                if (!command) return;
+
+                const packageUri = vscode.Uri.parse(uri, true);
+                const args = ["run", "--package", packageUri.fsPath, target];
+                const task = new vscode.Task(
+                    { type: "process" },
+                    vscode.workspace.getWorkspaceFolder(packageUri) ??
+                        vscode.TaskScope.Workspace,
+                    `Par Run: ${target}`,
+                    "par",
+                    new vscode.ProcessExecution(command, args),
+                );
+                task.presentationOptions.clear = true;
+                task.presentationOptions.focus = false;
+
+                await vscode.tasks.executeTask(task);
+            },
+        ),
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${EXTENSION_NS}.runTestCli`,
+            async (uri: string, target: string) => {
+                const command = await getParCommand();
+                if (!command) return;
+
+                const packageUri = vscode.Uri.parse(uri, true);
+                const args = ["test", "--package", packageUri.fsPath, target];
+                const task = new vscode.Task(
+                    { type: "process" },
+                    vscode.workspace.getWorkspaceFolder(packageUri) ??
+                        vscode.TaskScope.Workspace,
+                    `Par Test: ${target}`,
+                    "par",
+                    new vscode.ProcessExecution(command, args),
+                );
+                task.presentationOptions.clear = true;
+                task.presentationOptions.focus = false;
+
+                await vscode.tasks.executeTask(task);
+            },
+        ),
+    );
+
+    const tdcp: vscode.TextDocumentContentProvider = {
+        provideTextDocumentContent(
+            uri: vscode.Uri,
+            token: vscode.CancellationToken,
+        ): vscode.ProviderResult<string> {
+            const client = getClient();
+
+            return client.sendRequest(
+                getBuiltinFileContent,
+                { builtin_path: uri.path },
+                token,
+            );
+        },
+    };
+    context.subscriptions.push(
+        vscode.workspace.registerTextDocumentContentProvider("par-builtin", tdcp),
+    );
 
     client = await createLanguageClient(context);
     client?.start();
@@ -81,10 +157,8 @@ async function createLanguageClient(
     );
 }
 
-export async function getParCommand(): Promise<string | undefined> {
-    const command = getParCommandFromConfig();
-    // todo: what if it's unset
-    return command;
+export async function getParCommand(): Promise<string | null> {
+    return getParCommandFromConfig() ?? which("par", { nothrow: true });
 }
 
 function getParCommandFromConfig(): string | undefined {
