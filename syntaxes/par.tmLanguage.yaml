@@ -145,14 +145,14 @@ repository:
       - name: keyword.declaration
         match: \b(dec|def|type|let|module|import|export)\b
       - name: keyword.control
-        match: \b(do|case|in|chan|begin|loop|unfounded|catch|throw|try|todo|poll|repoll|submit|default|else|if|is|and|or|not)\b
+        match: \b(do|case|in|chan|begin|loop|unbox|unfounded|catch|throw|try|todo|poll|repoll|submit|default|else|if|is|and|or|not)\b
       - name: keyword.other
         match: \b(either|choice|recursive|iterative|self|box|dual|as|external|include)\b
       - name: keyword.operator
         match: '!'
   dot-keywords:
     patterns:
-      - match: (\.)\s*(case|try|begin|loop|unfounded|default)\b(@([a-z_][\w\d_]*))?
+      - match: (\.)\s*(case|try|begin|loop|unbox|unfounded|default)\b(@([a-z_][\w\d_]*))?
         captures:
           1: { name: punctuation.accessor.dot }
           2: { name: keyword.control }
